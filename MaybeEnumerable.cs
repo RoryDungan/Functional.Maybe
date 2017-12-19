@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Functional.Maybe
@@ -18,31 +17,41 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> FirstMaybe<T>(this IEnumerable<T> items)
 		{
-			Contract.Requires(items != null);
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
+
 			return FirstMaybe(items, arg => true);
 		}
 
-        /// <summary>
-        /// First item matching <paramref name="predicate"/> or Nothing
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public static Maybe<T> FirstMaybe<T>(this IEnumerable<T> items, Func<T, bool> predicate)
-	    {
-	        Contract.Requires(items != null);
-	        Contract.Requires(predicate != null);
+		/// <summary>
+		/// First item matching <paramref name="predicate"/> or Nothing
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items"></param>
+		/// <param name="predicate"></param>
+		/// <returns></returns>
+		public static Maybe<T> FirstMaybe<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+		{
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
+			if (predicate == null)
+			{
+				throw new ArgumentNullException("predicate");
+			}
 
-	        foreach(var item in items) {
-	            if(predicate(item)) {
-	                return item.ToMaybe();
-	            }
-	        }
-	        return Maybe<T>.Nothing;
-	    }
+			foreach(var item in items) {
+				if(predicate(item)) {
+					return item.ToMaybe();
+				}
+			}
+			return Maybe<T>.Nothing;
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Single item or Nothing
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -50,7 +59,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> SingleMaybe<T>(this IEnumerable<T> items)
 		{
-			Contract.Requires(items != null);
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
 			return SingleMaybe(items, arg => true);
 		}
 
@@ -63,25 +75,31 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> SingleMaybe<T>(this IEnumerable<T> items, Func<T, bool> predicate)
 		{
-			Contract.Requires(items != null);
-			Contract.Requires(predicate != null);
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
+			if (predicate == null)
+			{
+				throw new ArgumentNullException("predicate");
+			}
 
-            var result = default(T);
-            var count = 0;
-            foreach(var element in items) {
-                if(predicate(element)) {
-                    result = element;
-                    count++;
-                    if(count > 1)
-                        return Maybe<T>.Nothing;
-                }
-            }
-            switch(count) {
-                case 0: return Maybe<T>.Nothing;
-                case 1: return result.ToMaybe();
-            }
-            return Maybe<T>.Nothing;
-        }
+			var result = default(T);
+			var count = 0;
+			foreach(var element in items) {
+				if(predicate(element)) {
+					result = element;
+					count++;
+					if(count > 1)
+						return Maybe<T>.Nothing;
+				}
+			}
+			switch(count) {
+				case 0: return Maybe<T>.Nothing;
+				case 1: return result.ToMaybe();
+			}
+			return Maybe<T>.Nothing;
+		}
 
 		/// <summary>
 		/// Last item or Nothing
@@ -91,36 +109,45 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> LastMaybe<T>(this IEnumerable<T> items)
 		{
-			Contract.Requires(items != null);
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
 			return LastMaybe(items, arg => true);
 		}
 
-	    /// <summary>
-	    /// Last item matching <paramref name="predicate"/> or Nothing
-	    /// </summary>
-	    /// <typeparam name="T"></typeparam>
-	    /// <param name="items"></param>
-	    /// <param name="predicate"></param>
-	    /// <returns></returns>
-	    public static Maybe<T> LastMaybe<T>(this IEnumerable<T> items, Func<T, bool> predicate)
-	    {
-	        Contract.Requires(items != null);
-	        Contract.Requires(predicate != null);
+		/// <summary>
+		/// Last item matching <paramref name="predicate"/> or Nothing
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items"></param>
+		/// <param name="predicate"></param>
+		/// <returns></returns>
+		public static Maybe<T> LastMaybe<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+		{
+			if (items == null)
+			{
+				throw new ArgumentNullException("items");
+			}
+			if (predicate == null)
+			{
+				throw new ArgumentNullException("predicate");
+			}
 
-	        var result = default(T);
-	        var found = false;
-	        foreach(var element in items) {
-	            if(predicate(element)) {
-	                result = element;
-	                found = true;
-	            }
-	        }
-	        if(found)
-	            return result.ToMaybe();
-	        return Maybe<T>.Nothing;
-	    }
+			var result = default(T);
+			var found = false;
+			foreach(var element in items) {
+				if(predicate(element)) {
+					result = element;
+					found = true;
+				}
+			}
+			if(found)
+				return result.ToMaybe();
+			return Maybe<T>.Nothing;
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Returns the value of <paramref name="maybeCollection"/> if exists orlse an empty collection
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -141,7 +168,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<Maybe<TResult>> Select<T, TResult>(this IEnumerable<Maybe<T>> maybes, Func<T, TResult> selector)
 		{
-			Contract.Requires(maybes != null);
+			if (maybes == null)
+			{
+				throw new ArgumentNullException("maybes");
+			}
 			return maybes.Select(maybe => maybe.Select(selector));
 		}
 
@@ -153,7 +183,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<IEnumerable<T>> WholeSequenceOfValues<T>(this IEnumerable<Maybe<T>> maybes)
 		{
-			Contract.Requires(maybes != null);
+			if (maybes == null)
+			{
+				throw new ArgumentNullException("maybes");
+			}
 			var forced = maybes.ToArray();
 			// there has got to be a better way to do this
 			if (forced.AnyNothing())
@@ -170,7 +203,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<T> WhereValueExist<T>(this IEnumerable<Maybe<T>> maybes)
 		{
-			Contract.Requires(maybes != null);
+			if (maybes == null)
+			{
+				throw new ArgumentNullException("maybes");
+			}
 			return SelectWhereValueExist(maybes, m => m);
 		}
 
@@ -184,10 +220,13 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<TResult> SelectWhereValueExist<T, TResult>(this IEnumerable<Maybe<T>> maybes, Func<T, TResult> fn)
 		{
-			Contract.Requires(maybes != null);
+			if (maybes == null)
+			{
+				throw new ArgumentNullException("maybes");
+			}
 			return from maybe in maybes
-			       where maybe.HasValue
-			       select fn(maybe.Value);
+				   where maybe.HasValue
+				   select fn(maybe.Value);
 		}
 
 		/// <summary>
@@ -198,7 +237,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static bool AnyNothing<T>(this IEnumerable<Maybe<T>> maybes)
 		{
-			Contract.Requires(maybes != null);
+			if (maybes == null)
+			{
+				throw new ArgumentNullException("maybes");
+			}
 			return maybes.Any(m => !m.HasValue);
 		}
 
@@ -211,7 +253,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<IEnumerable<T>> WhereAll<T>(this IEnumerable<T> xs, Func<T, Maybe<bool>> pred)
 		{
-			Contract.Requires(xs != null);
+			if (xs == null)
+			{
+				throw new ArgumentNullException("xs");
+			}
 			var l = new List<T>();
 			foreach (var x in xs)
 			{
@@ -233,11 +278,14 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<T> Where<T>(this IEnumerable<T> xs, Func<T, Maybe<bool>> pred)
 		{
-			Contract.Requires(xs != null);
+			if (xs == null)
+			{
+				throw new ArgumentNullException("xs");
+			}
 			return from x in xs
-			       let b = pred(x)
-			       where b.HasValue && b.Value
-			       select x;
+				   let b = pred(x)
+				   where b.HasValue && b.Value
+				   select x;
 		}
 
 		/// <summary>
@@ -261,7 +309,14 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<T> Union<T>(this Maybe<T> @this, IEnumerable<T> others)
 		{
-			Contract.Requires(others != null);
+			if (@this == null)
+			{
+				throw new ArgumentNullException("@this");
+			}
+			if (others == null)
+			{
+				throw new ArgumentNullException("others");
+			}
 
 			return @this.ToEnumerable().Union(others);
 		}
@@ -275,7 +330,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static IEnumerable<T> Union<T>(this IEnumerable<T> @these, Maybe<T> other)
 		{
-			Contract.Requires(@these != null);
+			if (@these == null)
+			{
+				throw new ArgumentNullException("@these");
+			}
 
 			return @these.Union(other.ToEnumerable());
 		}

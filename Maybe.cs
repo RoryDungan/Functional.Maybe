@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace Functional.Maybe
@@ -73,7 +72,10 @@ namespace Functional.Maybe
 
 		internal Maybe(T value)
 		{
-			Contract.Requires(value != null);
+			if (value == null)
+			{
+				throw new ArgumentNullException("value");
+			}
 
 			_value = value;
 			_hasValue = true;

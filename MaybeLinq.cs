@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Functional.Maybe
 {
@@ -18,7 +17,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<TResult> Select<T, TResult>(this Maybe<T> a, Func<T, TResult> fn)
 		{
-			Contract.Requires(fn != null);
+			if (fn == null)
+			{
+				throw new ArgumentNullException("fn");
+			}
 
 			if (a.HasValue)
 			{
@@ -42,8 +44,14 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static TResult SelectOrElse<T, TResult>(this Maybe<T> a, Func<T, TResult> fn, Func<TResult> @else)
 		{
-			Contract.Requires(fn != null);
-			Contract.Requires(@else != null);
+			if (fn == null)
+			{
+				throw new ArgumentNullException("fn");
+			}
+			if (@else == null)
+			{
+				throw new ArgumentNullException("@else");
+			}
 
 			return a.HasValue ? fn(a.Value) : @else();
 		}
@@ -56,7 +64,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> Where<T>(this Maybe<T> a, Func<T, bool> predicate)
 		{
-			Contract.Requires(predicate != null);
+			if (predicate == null)
+			{
+				throw new ArgumentNullException("predicate");
+			}
 
 			if (!a.HasValue)
 				return a;
@@ -76,7 +87,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<TR> SelectMany<T, TR>(this Maybe<T> a, Func<T, Maybe<TR>> fn)
 		{
-			Contract.Requires(fn != null);
+			if (fn == null)
+			{
+				throw new ArgumentNullException("fn");
+			}
 
 			if (!a.HasValue)
 				return Maybe<TR>.Nothing;

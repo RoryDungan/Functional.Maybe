@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Functional.Maybe
 {
@@ -19,9 +18,9 @@ namespace Functional.Maybe
 		public static Maybe<TB> Cast<TA, TB>(this Maybe<TA> a) where TB : class
 		{
 			return from m in a
-			       let t = m as TB
-			       where t != null
-			       select t;
+				   let t = m as TB
+				   where t != null
+				   select t;
 		}
 
 		/// <summary>
@@ -65,7 +64,10 @@ namespace Functional.Maybe
 		/// <returns></returns>
 		public static Maybe<T> ToMaybeFromList<T>(this IEnumerable<T> xs)
 		{
-			Contract.Requires(xs != null);
+			if (xs == null)
+			{
+				throw new ArgumentNullException("xs");
+			}
 
 			return xs.FirstMaybe();
 		}
